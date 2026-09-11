@@ -4,21 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Laporan RM & CCM</title>
-    <!-- Framework CSS Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Library Chart.js untuk Grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
     <div class="max-w-5xl mx-auto space-y-6">
         
-        <!-- Header -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
             <h1 class="text-2xl font-bold text-slate-800">Dashboard Laporan Harian</h1>
             <p class="text-slate-500 text-sm">Pantau grafik dan akumulasi nilai RM & CCM</p>
         </div>
 
-        <!-- Section Grafik -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
             <h2 class="text-lg font-semibold text-slate-700 mb-4">Grafik Pergerakan RM & CCM</h2>
             <div class="relative h-72 w-full">
@@ -26,28 +22,34 @@
             </div>
         </div>
 
-        <!-- Section Input & Edit -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
             <h2 class="text-lg font-semibold text-slate-700 mb-4" id="formTitle">Input Data Baru</h2>
-            <form id="laporanForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Input hidden untuk menyimpan ID dokumen saat proses Edit -->
+            <form id="laporanForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="hidden" id="editDocId" value="">
                 
-                <div>
+                <!-- Tambahan Input Tanggal untuk Mode Edit -->
+                <div id="dateInputContainer" class="hidden">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal (DD-MM-YYYY)</label>
+                    <input type="text" id="inputTanggal" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div class="md:col-span-1">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp RM (Opsional)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">Rp</span>
                         <input type="number" id="inputRM" class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
                     </div>
                 </div>
-                <div>
+                
+                <div class="md:col-span-1">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp CCM (Opsional)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">Rp</span>
                         <input type="number" id="inputCCM" class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
                     </div>
                 </div>
-                <div class="flex items-end space-x-2">
+                
+                <div class="flex items-end space-x-2 md:col-span-2 lg:col-span-1">
                     <button type="submit" id="btnSubmit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors">
                         Simpan Data
                     </button>
@@ -58,7 +60,6 @@
             </form>
         </div>
 
-        <!-- Section Tabel & Total -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -71,7 +72,6 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="text-slate-600 text-sm">
-                        <!-- Data dari Firebase akan muncul di sini -->
                     </tbody>
                     <tfoot class="bg-slate-50 font-semibold text-slate-800 text-sm">
                         <tr>
@@ -90,184 +90,186 @@
         </div>
     </div>
 
-    <!-- Firebase & Logika Aplikasi -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"; // cite: 2
 
-        // Konfigurasi Firebase dari File Anda
         const firebaseConfig = {
-            apiKey: "AIzaSyC8Dnj8SqRLN5uU6mzE3Ri9G3UXx3TSeVE",
-            authDomain: "warkop-bang-fer.firebaseapp.com",
-            projectId: "warkop-bang-fer",
-            storageBucket: "warkop-bang-fer.firebasestorage.app",
-            messagingSenderId: "27974400468",
-            appId: "1:27974400468:web:f8126ec645a6a437367e41"
+            apiKey: "AIzaSyC8Dnj8SqRLN5uU6mzE3Ri9G3UXx3TSeVE", // cite: 2
+            authDomain: "warkop-bang-fer.firebaseapp.com", // cite: 2
+            projectId: "warkop-bang-fer", // cite: 2
+            storageBucket: "warkop-bang-fer.firebasestorage.app", // cite: 2
+            messagingSenderId: "27974400468", // cite: 2
+            appId: "1:27974400468:web:f8126ec645a6a437367e41" // cite: 2
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const laporanRef = collection(db, "laporan_bulanan");
+        const app = initializeApp(firebaseConfig); // cite: 2
+        const db = getFirestore(app); // cite: 2
+        const laporanRef = collection(db, "laporan_bulanan"); // cite: 2
 
-        // Inisialisasi Chart.js
-        const ctx = document.getElementById('laporanChart').getContext('2d');
-        const laporanChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [], // Label Tanggal
-                datasets: [
+        const ctx = document.getElementById('laporanChart').getContext('2d'); // cite: 2
+        const laporanChart = new Chart(ctx, { // cite: 2
+            type: 'line', // cite: 2
+            data: { // cite: 2
+                labels: [], // cite: 2
+                datasets: [ // cite: 2
                     {
-                        label: 'Nilai RM',
-                        data: [],
-                        borderColor: '#3b82f6', // Biru
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
+                        label: 'Nilai RM', // cite: 2
+                        data: [], // cite: 2
+                        borderColor: '#3b82f6', // cite: 2
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)', // cite: 2
+                        borderWidth: 2, // cite: 2
+                        fill: true, // cite: 2
+                        tension: 0.4 // cite: 2
                     },
                     {
-                        label: 'Nilai CCM',
-                        data: [],
-                        borderColor: '#10b981', // Hijau
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
+                        label: 'Nilai CCM', // cite: 2
+                        data: [], // cite: 2
+                        borderColor: '#10b981', // cite: 2
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)', // cite: 2
+                        borderWidth: 2, // cite: 2
+                        fill: true, // cite: 2
+                        tension: 0.4 // cite: 2
                     }
                 ]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
-                scales: {
-                    y: { beginAtZero: true }
-                }
+            options: { // cite: 2
+                responsive: true, // cite: 2
+                maintainAspectRatio: false, // cite: 2
+                plugins: { legend: { position: 'top' } }, // cite: 2
+                scales: { y: { beginAtZero: true } } // cite: 2
             }
         });
 
-        // Format Tanggal Hari Ini
-        function getTodayDate() {
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0'); 
-            const yyyy = today.getFullYear();
-            return `${dd}-${mm}-${yyyy}`;
+        function getTodayDate() { // cite: 2
+            const today = new Date(); // cite: 2
+            const dd = String(today.getDate()).padStart(2, '0'); // cite: 2
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // cite: 2
+            const yyyy = today.getFullYear(); // cite: 2
+            return `${dd}-${mm}-${yyyy}`; // cite: 2
         }
 
-        // Handle Form Submit (Tambah & Edit)
-        const form = document.getElementById('laporanForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        const form = document.getElementById('laporanForm'); // cite: 2
+        form.addEventListener('submit', async (e) => { // cite: 2
+            e.preventDefault(); // cite: 2
             
-            const rawRM = document.getElementById('inputRM').value;
-            const rawCCM = document.getElementById('inputCCM').value;
+            const rawRM = document.getElementById('inputRM').value; // cite: 2
+            const rawCCM = document.getElementById('inputCCM').value; // cite: 2
             
-            // Validasi: Tolak jika kedua form kosong
-            if (rawRM === "" && rawCCM === "") {
-                alert("Harap isi setidaknya satu nilai (RM atau CCM) sebelum menyimpan.");
-                return;
+            if (rawRM === "" && rawCCM === "") { // cite: 2
+                alert("Harap isi setidaknya satu nilai (RM atau CCM) sebelum menyimpan."); // cite: 2
+                return; // cite: 2
             }
 
-            const editId = document.getElementById('editDocId').value;
-            const rmValue = parseFloat(rawRM) || 0; // Otomatis 0 jika kosong
-            const ccmValue = parseFloat(rawCCM) || 0; // Otomatis 0 jika kosong
+            const editId = document.getElementById('editDocId').value; // cite: 2
+            const inputTanggal = document.getElementById('inputTanggal').value;
+            const rmValue = parseFloat(rawRM) || 0; // cite: 2
+            const ccmValue = parseFloat(rawCCM) || 0; // cite: 2
             
             try {
-                if (editId) {
-                    // Logika Update/Edit Data
-                    const docRef = doc(db, "laporan_bulanan", editId);
-                    await updateDoc(docRef, { rm: rmValue, ccm: ccmValue });
-                    resetForm();
-                } else {
-                    // Logika Tambah Data Baru
-                    await addDoc(laporanRef, {
-                        tanggal: getTodayDate(),
-                        timestamp: new Date(),
-                        rm: rmValue,
-                        ccm: ccmValue
+                if (editId) { // cite: 2
+                    const docRef = doc(db, "laporan_bulanan", editId); // cite: 2
+                    await updateDoc(docRef, { 
+                        tanggal: inputTanggal, 
+                        rm: rmValue, 
+                        ccm: ccmValue 
                     });
-                    form.reset();
+                    resetForm(); // cite: 2
+                } else { // cite: 2
+                    await addDoc(laporanRef, { // cite: 2
+                        tanggal: getTodayDate(), // cite: 2
+                        timestamp: new Date(), // cite: 2
+                        rm: rmValue, // cite: 2
+                        ccm: ccmValue // cite: 2
+                    });
+                    form.reset(); // cite: 2
                 }
-            } catch (error) {
-                console.error("Error: ", error);
-                alert("Terjadi kesalahan. Pastikan koneksi dan rules Firebase sudah benar.");
+            } catch (error) { // cite: 2
+                console.error("Error: ", error); // cite: 2
+                alert("Terjadi kesalahan. Pastikan koneksi dan rules Firebase sudah benar."); // cite: 2
             }
         });
 
-        // Tampilkan Data Secara Realtime
-        const q = query(laporanRef, orderBy("timestamp", "asc"));
-        onSnapshot(q, (snapshot) => {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
+        const q = query(laporanRef, orderBy("timestamp", "asc")); // cite: 2
+        onSnapshot(q, (snapshot) => { // cite: 2
+            const tableBody = document.getElementById('tableBody'); // cite: 2
+            tableBody.innerHTML = ''; // cite: 2
             
-            let sumRM = 0;
-            let sumCCM = 0;
+            let sumRM = 0; // cite: 2
+            let sumCCM = 0; // cite: 2
             
-            // Array untuk update Chart
-            const chartLabels = [];
-            const chartDataRM = [];
-            const chartDataCCM = [];
+            const chartLabels = []; // cite: 2
+            const chartDataRM = []; // cite: 2
+            const chartDataCCM = []; // cite: 2
 
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const docId = docSnap.id;
+            snapshot.forEach((docSnap) => { // cite: 2
+                const data = docSnap.data(); // cite: 2
+                const docId = docSnap.id; // cite: 2
                 
-                sumRM += data.rm;
-                sumCCM += data.ccm;
+                sumRM += data.rm; // cite: 2
+                sumCCM += data.ccm; // cite: 2
 
-                // Push data ke array Chart
-                chartLabels.push(data.tanggal);
-                chartDataRM.push(data.rm);
-                chartDataCCM.push(data.ccm);
+                chartLabels.push(data.tanggal); // cite: 2
+                chartDataRM.push(data.rm); // cite: 2
+                chartDataCCM.push(data.ccm); // cite: 2
 
                 tableBody.innerHTML += `
                     <tr class="border-b hover:bg-slate-50 transition-colors">
                         <td class="p-4">${data.tanggal}</td>
                         <td class="p-4">${data.rm.toLocaleString('id-ID')}</td>
                         <td class="p-4">${data.ccm.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="editData('${docId}', ${data.rm}, ${data.ccm})" class="text-blue-500 hover:text-blue-700 font-medium bg-blue-50 px-3 py-1 rounded-md">Edit</button>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="editData('${docId}', '${data.tanggal}', ${data.rm}, ${data.ccm})" class="text-blue-500 hover:text-blue-700 font-medium bg-blue-50 px-3 py-1 rounded-md">Edit</button>
+                            <button onclick="hapusData('${docId}')" class="text-red-500 hover:text-red-700 font-medium bg-red-50 px-3 py-1 rounded-md">Hapus</button>
                         </td>
                     </tr>
-                `;
+                `; // cite: 2
             });
 
-            // Update Total Angka
-            document.getElementById('totalRM').innerText = sumRM.toLocaleString('id-ID');
-            document.getElementById('totalCCM').innerText = sumCCM.toLocaleString('id-ID');
-            document.getElementById('grandTotal').innerText = (sumRM + sumCCM).toLocaleString('id-ID');
+            document.getElementById('totalRM').innerText = sumRM.toLocaleString('id-ID'); // cite: 2
+            document.getElementById('totalCCM').innerText = sumCCM.toLocaleString('id-ID'); // cite: 2
+            document.getElementById('grandTotal').innerText = (sumRM + sumCCM).toLocaleString('id-ID'); // cite: 2
 
-            // Update Grafik
-            laporanChart.data.labels = chartLabels;
-            laporanChart.data.datasets[0].data = chartDataRM;
-            laporanChart.data.datasets[1].data = chartDataCCM;
-            laporanChart.update();
+            laporanChart.data.labels = chartLabels; // cite: 2
+            laporanChart.data.datasets[0].data = chartDataRM; // cite: 2
+            laporanChart.data.datasets[1].data = chartDataCCM; // cite: 2
+            laporanChart.update(); // cite: 2
         });
 
-        // Fungsi Global untuk Edit Data
-        window.editData = (id, rm, ccm) => {
-            document.getElementById('editDocId').value = id;
-            document.getElementById('inputRM').value = rm === 0 ? '' : rm; // Tampilkan kosong jika nilainya 0
-            document.getElementById('inputCCM').value = ccm === 0 ? '' : ccm;
+        window.editData = (id, tanggal, rm, ccm) => {
+            document.getElementById('editDocId').value = id; // cite: 2
+            document.getElementById('inputTanggal').value = tanggal;
+            document.getElementById('inputRM').value = rm === 0 ? '' : rm; // cite: 2
+            document.getElementById('inputCCM').value = ccm === 0 ? '' : ccm; // cite: 2
             
-            // Ubah tampilan form
-            document.getElementById('formTitle').innerText = "Edit Data";
-            document.getElementById('btnSubmit').innerText = "Update Data";
-            document.getElementById('btnSubmit').classList.replace('bg-blue-600', 'bg-emerald-600');
-            document.getElementById('btnCancel').classList.remove('hidden');
+            document.getElementById('dateInputContainer').classList.remove('hidden');
+            document.getElementById('formTitle').innerText = "Edit Data"; // cite: 2
+            document.getElementById('btnSubmit').innerText = "Update Data"; // cite: 2
+            document.getElementById('btnSubmit').classList.replace('bg-blue-600', 'bg-emerald-600'); // cite: 2
+            document.getElementById('btnCancel').classList.remove('hidden'); // cite: 2
         };
 
-        // Fungsi Batal Edit
-        document.getElementById('btnCancel').addEventListener('click', resetForm);
+        window.hapusData = async (id) => {
+            if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                try {
+                    await deleteDoc(doc(db, "laporan_bulanan", id));
+                } catch (error) {
+                    console.error("Error menghapus dokumen: ", error);
+                    alert("Gagal menghapus data.");
+                }
+            }
+        };
 
-        function resetForm() {
-            form.reset();
-            document.getElementById('editDocId').value = "";
-            document.getElementById('formTitle').innerText = "Input Data Baru";
-            document.getElementById('btnSubmit').innerText = "Simpan Data";
-            document.getElementById('btnSubmit').classList.replace('bg-emerald-600', 'bg-blue-600');
-            document.getElementById('btnCancel').classList.add('hidden');
+        document.getElementById('btnCancel').addEventListener('click', resetForm); // cite: 2
+
+        function resetForm() { // cite: 2
+            form.reset(); // cite: 2
+            document.getElementById('editDocId').value = ""; // cite: 2
+            document.getElementById('dateInputContainer').classList.add('hidden');
+            document.getElementById('formTitle').innerText = "Input Data Baru"; // cite: 2
+            document.getElementById('btnSubmit').innerText = "Simpan Data"; // cite: 2
+            document.getElementById('btnSubmit').classList.replace('bg-emerald-600', 'bg-blue-600'); // cite: 2
+            document.getElementById('btnCancel').classList.add('hidden'); // cite: 2
         }
     </script>
 </body>
