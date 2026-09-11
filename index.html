@@ -34,17 +34,17 @@
                 <input type="hidden" id="editDocId" value="">
                 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp RM</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp RM (Opsional)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">Rp</span>
-                        <input type="number" id="inputRM" required class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
+                        <input type="number" id="inputRM" class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp CCM</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Input Rp CCM (Opsional)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">Rp</span>
-                        <input type="number" id="inputCCM" required class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
+                        <input type="number" id="inputCCM" class="w-full border border-slate-300 rounded-lg py-2.5 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
                     </div>
                 </div>
                 <div class="flex items-end space-x-2">
@@ -95,7 +95,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // GANTI DENGAN CONFIG FIREBASE ANDA
+        // Konfigurasi Firebase dari File Anda
         const firebaseConfig = {
             apiKey: "AIzaSyC8Dnj8SqRLN5uU6mzE3Ri9G3UXx3TSeVE",
             authDomain: "warkop-bang-fer.firebaseapp.com",
@@ -159,9 +159,19 @@
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const rawRM = document.getElementById('inputRM').value;
+            const rawCCM = document.getElementById('inputCCM').value;
+            
+            // Validasi: Tolak jika kedua form kosong
+            if (rawRM === "" && rawCCM === "") {
+                alert("Harap isi setidaknya satu nilai (RM atau CCM) sebelum menyimpan.");
+                return;
+            }
+
             const editId = document.getElementById('editDocId').value;
-            const rmValue = parseFloat(document.getElementById('inputRM').value) || 0;
-            const ccmValue = parseFloat(document.getElementById('inputCCM').value) || 0;
+            const rmValue = parseFloat(rawRM) || 0; // Otomatis 0 jika kosong
+            const ccmValue = parseFloat(rawCCM) || 0; // Otomatis 0 jika kosong
             
             try {
                 if (editId) {
@@ -238,8 +248,8 @@
         // Fungsi Global untuk Edit Data
         window.editData = (id, rm, ccm) => {
             document.getElementById('editDocId').value = id;
-            document.getElementById('inputRM').value = rm;
-            document.getElementById('inputCCM').value = ccm;
+            document.getElementById('inputRM').value = rm === 0 ? '' : rm; // Tampilkan kosong jika nilainya 0
+            document.getElementById('inputCCM').value = ccm === 0 ? '' : ccm;
             
             // Ubah tampilan form
             document.getElementById('formTitle').innerText = "Edit Data";
