@@ -7,13 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+<body class="bg-slate-50 min-h-screen p-3 md:p-8 font-sans">
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         
         <!-- Header & Navigasi Tab -->
-        <div class="p-6 border-b border-slate-100 bg-white">
-            <h1 class="text-2xl font-bold text-slate-800 mb-6">Sistem Laporan Harian Bang Fer</h1>
-            <nav class="flex gap-6 text-sm font-medium">
+        <div class="p-4 md:p-6 border-b border-slate-100 bg-white">
+            <h1 class="text-xl md:text-2xl font-bold text-slate-800 mb-4 md:mb-6">Sistem Laporan Harian Bang Fer</h1>
+            <nav class="flex gap-4 md:gap-6 text-sm font-medium">
                 <button id="navDashboard" onclick="switchTab('dashboard')" class="text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all">Dashboard & Input Data</button>
                 <button id="navRekap" onclick="switchTab('rekap')" class="text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all">Rekap & Histori Laporan</button>
             </nav>
@@ -22,10 +22,10 @@
         <!-- ========================================== -->
         <!-- TAB 1: DASHBOARD & INPUT                   -->
         <!-- ========================================== -->
-        <div id="tabDashboard" class="p-6 space-y-6 bg-slate-50/50">
+        <div id="tabDashboard" class="p-4 md:p-6 space-y-6 bg-slate-50/50">
             
-            <!-- Form Input Utama & Tambah Produk Langsung -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <!-- Form Input Utama -->
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
                 <h2 class="text-lg font-semibold text-slate-700 mb-4" id="formTitle">Input Data Laporan Baru</h2>
                 <form id="laporanForm" class="space-y-6">
                     <input type="hidden" id="editDocId" value="">
@@ -40,75 +40,77 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- BAGIAN CCM -->
-                        <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 space-y-4 shadow-inner">
+                        <div class="bg-emerald-50 p-4 md:p-5 rounded-xl border border-emerald-100 space-y-4 shadow-inner">
                             <h3 class="font-bold text-emerald-800 border-b border-emerald-200 pb-2">Bagian CCM</h3>
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk CCM</label>
-                                <div class="flex gap-2">
+                                <!-- Layout responsif flex-col di HP agar tombol tidak terpotong -->
+                                <div class="flex flex-col sm:flex-row gap-2">
                                     <select id="selectProdukCCM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
                                         <option value="">-- Pilih atau Tambah Produk --</option>
                                     </select>
-                                    <button type="button" onclick="bukaInputProdukBaru('CCM')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
+                                    <button type="button" onclick="bukaInputProdukBaru('CCM')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap text-center">+ Produk Baru</button>
                                 </div>
                                 <input type="text" id="inputProdukBaruCCM" class="hidden mt-2 w-full border border-emerald-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk CCM baru...">
                             </div>
 
                             <input type="hidden" id="kategoriCCM" value="CCM">
 
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-3 gap-2 md:gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
-                                    <input type="number" step="any" id="inputBeratCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
+                                    <input type="number" step="any" id="inputBeratCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Qty</label>
-                                    <input type="number" step="any" id="inputQtyCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Qty</label>
+                                    <input type="number" step="any" id="inputQtyCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Nilai (Rp)</label>
-                                    <input type="number" id="inputNilaiCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Nilai (Rp)</label>
+                                    <input type="number" id="inputNilaiCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm" placeholder="0">
                                 </div>
                             </div>
                         </div>
 
                         <!-- BAGIAN RM -->
-                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 space-y-4 shadow-inner">
+                        <div class="bg-blue-50 p-4 md:p-5 rounded-xl border border-blue-100 space-y-4 shadow-inner">
                             <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2">Bagian RM</h3>
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk RM</label>
-                                <div class="flex gap-2">
+                                <!-- Layout responsif flex-col di HP agar tombol tidak terpotong -->
+                                <div class="flex flex-col sm:flex-row gap-2">
                                     <select id="selectProdukRM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                                         <option value="">-- Pilih atau Tambah Produk --</option>
                                     </select>
-                                    <button type="button" onclick="bukaInputProdukBaru('RM')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
+                                    <button type="button" onclick="bukaInputProdukBaru('RM')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap text-center">+ Produk Baru</button>
                                 </div>
                                 <input type="text" id="inputProdukBaruRM" class="hidden mt-2 w-full border border-blue-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk RM baru...">
                             </div>
 
                             <input type="hidden" id="kategoriRM" value="RM">
 
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-3 gap-2 md:gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
-                                    <input type="number" step="any" id="inputBeratRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
+                                    <input type="number" step="any" id="inputBeratRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Qty</label>
-                                    <input type="number" step="any" id="inputQtyRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Qty</label>
+                                    <input type="number" step="any" id="inputQtyRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Nilai (Rp)</label>
-                                    <input type="number" id="inputNilaiRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0">
+                                    <label class="block text-xs md:text-sm font-medium text-slate-700 mb-1">Nilai (Rp)</label>
+                                    <input type="number" id="inputNilaiRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-2 md:px-3 focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="0">
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="flex items-end space-x-2 pt-4">
-                        <button type="submit" id="btnSubmit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md">Simpan Data Laporan</button>
-                        <button type="button" id="btnCancel" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-3 px-8 rounded-lg transition-colors">Batal Edit</button>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+                        <button type="submit" id="btnSubmit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md text-center">Simpan Data Laporan</button>
+                        <button type="button" id="btnCancel" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-3 px-8 rounded-lg transition-colors text-center">Batal Edit</button>
                     </div>
                 </form>
             </div>
@@ -117,10 +119,10 @@
         <!-- ========================================== -->
         <!-- TAB 2: REKAP & HISTORI                     -->
         <!-- ========================================== -->
-        <div id="tabRekap" class="hidden p-6 space-y-6 bg-slate-50/50">
+        <div id="tabRekap" class="hidden p-4 md:p-6 space-y-6 bg-slate-50/50">
             
             <!-- Filter Pencarian -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
                 <h2 class="text-lg font-semibold text-slate-700 mb-4">Cari Histori Laporan</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div>
@@ -161,9 +163,9 @@
             </div>
 
             <!-- Grafik Rekap -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Grafik Nilai (Berdasarkan Hasil Pencarian)</h2>
-                <div class="relative h-64 w-full">
+                <div class="relative h-64 md:h-80 w-full">
                     <canvas id="laporanChart"></canvas>
                 </div>
             </div>
@@ -239,14 +241,12 @@
 
         let semuaDataLaporan = [];
 
-        // Setup Dropdown Tanggal Otomatis (01 - 31)
         const selTgl = document.getElementById('filterTgl');
         for(let i=1; i<=31; i++) {
             let val = String(i).padStart(2, '0');
             selTgl.innerHTML += `<option value="${val}">${val}</option>`;
         }
 
-        // Setup Dropdown Tahun Otomatis (Realtime)
         const selThn = document.getElementById('filterThn');
         const tahunSekarang = new Date().getFullYear(); 
         const tahunMulai = 2024; 
@@ -292,7 +292,7 @@
             }
         };
 
-        // Chart Setup
+        // Chart Setup dengan opsi responsif
         const ctx = document.getElementById('laporanChart').getContext('2d');
         const laporanChart = new Chart(ctx, {
             type: 'line',
@@ -300,12 +300,20 @@
                 { label: 'Nilai CCM (Rp)', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 2, fill: true, tension: 0.3 },
                 { label: 'Nilai RM (Rp)', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, fill: true, tension: 0.3 }
             ]},
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 15 // Mencegah tanggal saling bertumpuk di layar kecil/PC
+                        }
+                    }
+                }
+            }
         });
 
-        // ----------------------------------------------------
-        // LOGIKA PRODUK OTOMATIS DI FORM LAPORAN
-        // ----------------------------------------------------
         window.bukaInputProdukBaru = (kategori) => {
             const inputField = document.getElementById(`inputProdukBaru${kategori}`);
             const selectField = document.getElementById(`selectProduk${kategori}`);
@@ -348,9 +356,6 @@
             selectRM.value = curRM;
         });
 
-        // ----------------------------------------------------
-        // SIMPAN LAPORAN
-        // ----------------------------------------------------
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -450,7 +455,9 @@
             
             let sTotalBeratCCM = 0, sQ_CCM = 0, sN_CCM = 0; 
             let sTotalBeratRM = 0, sQ_RM = 0, sN_RM = 0;
-            const cLabels = [], cCCM = [], cRM = [];
+
+            // Objek untuk mengakumulasikan grafik per tanggal unik agar tidak kembar/menumpuk
+            let chartDataMap = {};
 
             dataArray.forEach(d => {
                 const pCCM = d.produkCCM || "-";
@@ -463,7 +470,6 @@
                 const qRM = d.qtyRM || 0;
                 const nRM = d.nilaiRM !== undefined ? d.nilaiRM : (d.rm || 0); 
 
-                // Perhitungan Akumulasi Berat = (Berat x Qty)
                 const totalBeratBarisCCM = bCCM * qCCM;
                 const totalBeratBarisRM = bRM * qRM;
 
@@ -475,8 +481,12 @@
                 sQ_RM += qRM; 
                 sN_RM += nRM;
 
-                cLabels.push(d.tanggal);
-                cCCM.push(nCCM); cRM.push(nRM);
+                // Akumulasi nilai grafik berdasarkan tanggal yang sama
+                if (!chartDataMap[d.tanggal]) {
+                    chartDataMap[d.tanggal] = { ccm: 0, rm: 0 };
+                }
+                chartDataMap[d.tanggal].ccm += nCCM;
+                chartDataMap[d.tanggal].rm += nRM;
 
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-slate-50">
@@ -508,6 +518,11 @@
             document.getElementById('grandTotalBerat').innerText = (sTotalBeratCCM + sTotalBeratRM).toLocaleString('id-ID');
             document.getElementById('grandTotalQty').innerText = (sQ_CCM + sQ_RM).toLocaleString('id-ID');
             document.getElementById('grandTotalNilai').innerText = (sN_CCM + sN_RM).toLocaleString('id-ID');
+
+            // Masukkan data grafik yang sudah digabungkan per tanggal unik
+            const cLabels = Object.keys(chartDataMap);
+            const cCCM = cLabels.map(tgl => chartDataMap[tgl].ccm);
+            const cRM = cLabels.map(tgl => chartDataMap[tgl].rm);
 
             laporanChart.data.labels = cLabels;
             laporanChart.data.datasets[0].data = cCCM;
