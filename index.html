@@ -29,6 +29,14 @@
                 <h2 class="text-lg font-semibold text-slate-700 mb-4">Master Data Produk</h2>
                 <form id="produkForm" class="flex flex-col md:flex-row gap-4">
                     <input type="text" id="inputNamaProduk" required class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ketik nama produk baru (contoh: Cat Biru 5L)">
+                    
+                    <!-- Tambahan Kategori -->
+                    <select id="inputKategoriProduk" required class="border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-indigo-500 outline-none bg-white md:w-48">
+                        <option value="" disabled selected>Pilih Kategori</option>
+                        <option value="CCM">Untuk CCM</option>
+                        <option value="RM">Untuk RM</option>
+                    </select>
+
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors">+ Tambah Produk</button>
                 </form>
                 <div class="mt-4">
@@ -45,9 +53,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div id="dateInputContainer">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal (DD-MM-YYYY)</label>
-                            <input type="text" id="inputTanggal" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50" placeholder="Contoh: 14-09-2026">
-                            <p class="text-xs text-slate-400 mt-1">*Kosongkan jika ingin pakai tanggal hari ini</p>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Laporan</label>
+                            <!-- Input Tanggal diganti menggunakan type="date" -->
+                            <input type="date" id="inputTanggal" required class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 cursor-pointer">
                         </div>
                     </div>
 
@@ -58,7 +66,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk CCM</label>
                                 <select id="selectProdukCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
-                                    <option value="">-- Pilih Produk --</option>
+                                    <option value="">-- Pilih Produk CCM --</option>
                                 </select>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
@@ -79,7 +87,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk RM</label>
                                 <select id="selectProdukRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                                    <option value="">-- Pilih Produk --</option>
+                                    <option value="">-- Pilih Produk RM --</option>
                                 </select>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
@@ -116,7 +124,6 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label>
                         <select id="filterTgl" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none">
                             <option value="">Semua Tanggal</option>
-                            <!-- Script akan mengisi opsi 01-31 -->
                         </select>
                     </div>
                     <div>
@@ -141,7 +148,6 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tahun</label>
                         <select id="filterThn" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none">
                             <option value="">Semua Tahun</option>
-                            <!-- Script akan mengisi opsi Tahun secara Otomatis -->
                         </select>
                     </div>
                     <div class="flex space-x-2">
@@ -176,7 +182,6 @@
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="text-slate-600 text-sm align-top">
-                            <!-- Data tabel dirender di sini -->
                         </tbody>
                     </table>
                 </div>
@@ -235,14 +240,37 @@
 
         // Setup Dropdown Tahun Otomatis (Realtime)
         const selThn = document.getElementById('filterThn');
-        const tahunSekarang = new Date().getFullYear(); // Ambil tahun saat ini dari sistem
-        const tahunMulai = 2024; // Anda bisa atur tahun dimulainya aplikasi
-        
+        const tahunSekarang = new Date().getFullYear(); 
+        const tahunMulai = 2024; 
         for(let y = tahunMulai; y <= tahunSekarang + 1; y++) {
-            // Tahun saat ini akan otomatis terpilih (selected) secara default
             const isSelected = (y === tahunSekarang) ? 'selected' : '';
             selThn.innerHTML += `<option value="${y}" ${isSelected}>${y}</option>`;
         }
+
+        // Fungsi Format Tanggal untuk Input type="date" (YYYY-MM-DD)
+        function getTodayForInput() {
+            const t = new Date();
+            return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+        }
+
+        // Konversi YYYY-MM-DD ke DD-MM-YYYY (Untuk disimpan ke Database & Ditampilkan di Tabel)
+        function formatUntukDatabase(dateStr) {
+            if(!dateStr) return "";
+            const parts = dateStr.split('-');
+            if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            return dateStr;
+        }
+
+        // Konversi DD-MM-YYYY ke YYYY-MM-DD (Untuk dimuat kembali ke Form saat di-Edit)
+        function formatUntukInputEdit(dateStr) {
+            if(!dateStr) return "";
+            const parts = dateStr.split('-');
+            if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            return dateStr;
+        }
+
+        // Set form tanggal laporan otomatis hari ini saat halaman dimuat
+        document.getElementById('inputTanggal').value = getTodayForInput();
 
         // Tab Switch Logic
         window.switchTab = (tabName) => {
@@ -272,51 +300,81 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
         });
 
-        // Master Produk
+        // ----------------------------------------------------
+        // MASTER DATA PRODUK LOGIC (SUDAH DIPERBAIKI)
+        // ----------------------------------------------------
         document.getElementById('produkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('inputNamaProduk').value.trim();
-            if(nama) {
-                await addDoc(produkRef, { nama: nama, timestamp: new Date() });
-                document.getElementById('inputNamaProduk').value = '';
+            const kategori = document.getElementById('inputKategoriProduk').value; // Mengambil data CCM atau RM
+            
+            if(nama && kategori) {
+                try {
+                    await addDoc(produkRef, { nama: nama, kategori: kategori, timestamp: new Date() });
+                    document.getElementById('inputNamaProduk').value = '';
+                    document.getElementById('inputKategoriProduk').value = ''; // Reset pilihan kategori
+                } catch (error) {
+                    alert("Gagal menambahkan produk, periksa koneksi internet Anda.");
+                }
             }
         });
 
+        // Membaca Master Data Secara Realtime dengan Filter Kategori
         onSnapshot(query(produkRef, orderBy("nama", "asc")), (snapshot) => {
             const container = document.getElementById('listProdukContainer');
             const selectCCM = document.getElementById('selectProdukCCM');
             const selectRM = document.getElementById('selectProdukRM');
-            const curCCM = selectCCM.value; const curRM = selectRM.value;
+            
+            const curCCM = selectCCM.value; 
+            const curRM = selectRM.value;
 
             container.innerHTML = '';
-            selectCCM.innerHTML = '<option value="">-- Pilih Produk --</option>';
-            selectRM.innerHTML = '<option value="">-- Pilih Produk --</option>';
+            selectCCM.innerHTML = '<option value="">-- Pilih Produk CCM --</option>';
+            selectRM.innerHTML = '<option value="">-- Pilih Produk RM --</option>';
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                container.innerHTML += `<span class="bg-slate-200 px-3 py-1 rounded-full border border-slate-300 flex items-center gap-2">${data.nama} <button onclick="hapusProduk('${doc.id}')" class="text-red-500 font-bold">&times;</button></span>`;
-                selectCCM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
-                selectRM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                const kat = data.kategori || 'UMUM'; // Backup jika ada data lama yang tidak punya kategori
+                
+                // Pewarnaan Label Badge berdasarkan kategori
+                let badgeStyle = "bg-slate-100 text-slate-700 border-slate-300";
+                if(kat === 'CCM') badgeStyle = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                if(kat === 'RM') badgeStyle = "bg-blue-100 text-blue-800 border-blue-300";
+
+                // Memasukkan Label ke Tampilan UI Master
+                container.innerHTML += `<span class="${badgeStyle} px-3 py-1 rounded-full border flex items-center gap-2 text-xs font-semibold shadow-sm">[${kat}] ${data.nama} <button type="button" onclick="hapusProduk('${doc.id}')" class="text-red-500 hover:text-red-700 font-bold ml-1">&times;</button></span>`;
+                
+                // Filter Dropdown: Masukkan opsi hanya sesuai kategorinya masing-masing
+                if(kat === 'CCM' || kat === 'UMUM') {
+                    selectCCM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                }
+                if(kat === 'RM' || kat === 'UMUM') {
+                    selectRM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                }
             });
-            selectCCM.value = curCCM; selectRM.value = curRM;
+            
+            selectCCM.value = curCCM; 
+            selectRM.value = curRM;
         });
 
         window.hapusProduk = async (id) => {
-            if (confirm("Hapus produk ini?")) await deleteDoc(doc(db, "master_produk", id));
+            if (confirm("Hapus produk ini dari Master Data?")) await deleteDoc(doc(db, "master_produk", id));
         };
 
-        // Form Laporan Utama
-        function getTodayDate() {
-            const t = new Date();
-            return `${String(t.getDate()).padStart(2, '0')}-${String(t.getMonth()+1).padStart(2, '0')}-${t.getFullYear()}`;
-        }
-
+        // ----------------------------------------------------
+        // FORM LAPORAN LOGIC (TANGGAL SUDAH DIKONVERSI)
+        // ----------------------------------------------------
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editDocId').value;
+            const inputTglRaw = document.getElementById('inputTanggal').value; 
+            
+            // Konversi dari YYYY-MM-DD ke DD-MM-YYYY untuk disimpan ke database
+            const tanggalDatabase = inputTglRaw ? formatUntukDatabase(inputTglRaw) : formatUntukDatabase(getTodayForInput());
+
             const dataToSave = {
-                tanggal: document.getElementById('inputTanggal').value || getTodayDate(),
+                tanggal: tanggalDatabase,
                 produkCCM: document.getElementById('selectProdukCCM').value,
                 beratCCM: parseFloat(document.getElementById('inputBeratCCM').value) || 0,
                 nilaiCCM: parseFloat(document.getElementById('inputNilaiCCM').value) || 0,
@@ -336,11 +394,7 @@
                     dataToSave.timestamp = new Date();
                     await addDoc(laporanRef, dataToSave);
                 }
-                form.reset(); document.getElementById('editDocId').value = "";
-                document.getElementById('btnSubmit').innerText = "Simpan Data Laporan";
-                document.getElementById('btnCancel').classList.add('hidden');
-                document.getElementById('btnSubmit').classList.replace('bg-emerald-600', 'bg-blue-600');
-                
+                resetFormState();
                 alert("Data berhasil disimpan!");
             } catch (error) { alert("Terjadi kesalahan."); }
         });
@@ -377,7 +431,6 @@
         window.resetFilter = () => {
             document.getElementById('filterTgl').value = "";
             document.getElementById('filterBln').value = "";
-            // Reset tahun mengikuti tahun sistem HP/Komputer secara realtime
             document.getElementById('filterThn').value = new Date().getFullYear().toString(); 
             terapkanFilter();
         };
@@ -437,7 +490,9 @@
         window.editData = (id, tgl, pCCM, bCCM, nCCM, pRM, bRM, nRM) => {
             switchTab('dashboard'); 
             document.getElementById('editDocId').value = id;
-            document.getElementById('inputTanggal').value = tgl;
+            
+            // Konversi kembali dari DD-MM-YYYY (di database/tabel) ke YYYY-MM-DD (untuk dimasukkan ke Date Picker)
+            document.getElementById('inputTanggal').value = formatUntukInputEdit(tgl);
             
             document.getElementById('selectProdukCCM').value = pCCM === "-" ? "" : pCCM;
             document.getElementById('inputBeratCCM').value = bCCM === 0 ? '' : bCCM;
@@ -458,13 +513,17 @@
             if (confirm("Yakin ingin menghapus laporan ini?")) await deleteDoc(doc(db, "laporan_bulanan", id));
         };
 
-        document.getElementById('btnCancel').addEventListener('click', () => {
-            form.reset(); document.getElementById('editDocId').value = "";
+        function resetFormState() {
+            form.reset(); 
+            document.getElementById('editDocId').value = "";
+            document.getElementById('inputTanggal').value = getTodayForInput(); // Otomatis kembali ke hari ini
             document.getElementById('formTitle').innerText = "Input Data Laporan Baru";
             document.getElementById('btnSubmit').innerText = "Simpan Data Laporan";
             document.getElementById('btnSubmit').classList.replace('bg-emerald-600', 'bg-blue-600');
             document.getElementById('btnCancel').classList.add('hidden');
-        });
+        }
+
+        document.getElementById('btnCancel').addEventListener('click', resetFormState);
     </script>
 </body>
 </html>
