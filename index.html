@@ -51,7 +51,6 @@
                                     </select>
                                     <button type="button" onclick="bukaInputProdukBaru('CCM')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
                                 </div>
-                                <!-- Input teks jika ingin tambah produk baru langsung -->
                                 <input type="text" id="inputProdukBaruCCM" class="hidden mt-2 w-full border border-emerald-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk CCM baru...">
                             </div>
 
@@ -85,7 +84,6 @@
                                     </select>
                                     <button type="button" onclick="bukaInputProdukBaru('RM')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
                                 </div>
-                                <!-- Input teks jika ingin tambah produk baru langsung -->
                                 <input type="text" id="inputProdukBaruRM" class="hidden mt-2 w-full border border-blue-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk RM baru...">
                             </div>
 
@@ -324,7 +322,6 @@
             }
         };
 
-        // Ambil list produk untuk dropdown secara realtime
         onSnapshot(query(produkRef, orderBy("nama", "asc")), (snapshot) => {
             const selectCCM = document.getElementById('selectProdukCCM');
             const selectRM = document.getElementById('selectProdukRM');
@@ -332,7 +329,6 @@
             const curCCM = selectCCM.value; 
             const curRM = selectRM.value;
 
-            // Pertahankan opsi pertama
             selectCCM.innerHTML = '<option value="">-- Pilih atau Tambah Produk --</option>';
             selectRM.innerHTML = '<option value="">-- Pilih atau Tambah Produk --</option>';
 
@@ -353,7 +349,7 @@
         });
 
         // ----------------------------------------------------
-        // SIMPAN LAPORAN & OTOMATIS SIMPAN PRODUK BARU JIKA ADA
+        // SIMPAN LAPORAN
         // ----------------------------------------------------
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
@@ -362,7 +358,6 @@
             const inputTglRaw = document.getElementById('inputTanggal').value; 
             const tanggalDatabase = inputTglRaw ? formatUntukDatabase(inputTglRaw) : formatUntukDatabase(getTodayForInput());
 
-            // Cek apakah user mengetik produk baru di CCM
             let produkCCM = document.getElementById('selectProdukCCM').value;
             const produkBaruCCM = document.getElementById('inputProdukBaruCCM').value.trim();
             if (produkBaruCCM) {
@@ -370,7 +365,6 @@
                 await addDoc(produkRef, { nama: produkBaruCCM, kategori: 'CCM', timestamp: new Date() });
             }
 
-            // Cek apakah user mengetik produk baru di RM
             let produkRM = document.getElementById('selectProdukRM').value;
             const produkBaruRM = document.getElementById('inputProdukBaruRM').value.trim();
             if (produkBaruRM) {
@@ -381,23 +375,23 @@
             const beratCCM = parseFloat(document.getElementById('inputBeratCCM').value) || 0;
             const qtyCCM = parseFloat(document.getElementById('inputQtyCCM').value) || 0;
             const nilaiSatuanCCM = parseFloat(document.getElementById('inputNilaiCCM').value) || 0;
-            const totalNilaiCCM = nilaiSatuanCCM * qtyCCM; // Nilai dikalikan Qty
+            const totalNilaiCCM = nilaiSatuanCCM * qtyCCM;
 
             const beratRM = parseFloat(document.getElementById('inputBeratRM').value) || 0;
             const qtyRM = parseFloat(document.getElementById('inputQtyRM').value) || 0;
             const nilaiSatuanRM = parseFloat(document.getElementById('inputNilaiRM').value) || 0;
-            const totalNilaiRM = nilaiSatuanRM * qtyRM; // Nilai dikalikan Qty
+            const totalNilaiRM = nilaiSatuanRM * qtyRM;
 
             const dataToSave = {
                 tanggal: tanggalDatabase,
                 produkCCM: produkCCM,
                 beratCCM: beratCCM,
                 qtyCCM: qtyCCM,
-                nilaiCCM: totalNilaiCCM, // Nilai sudah dikalikan Qty
+                nilaiCCM: totalNilaiCCM,
                 produkRM: produkRM,
                 beratRM: beratRM,
                 qtyRM: qtyRM,
-                nilaiRM: totalNilaiRM   // Nilai sudah dikalikan Qty
+                nilaiRM: totalNilaiRM
             };
 
             if (dataToSave.nilaiCCM === 0 && dataToSave.nilaiRM === 0 && dataToSave.beratCCM === 0 && dataToSave.beratRM === 0 && dataToSave.qtyCCM === 0 && dataToSave.qtyRM === 0) { 
@@ -416,7 +410,6 @@
             } catch (error) { alert("Terjadi kesalahan."); }
         });
 
-        // Ambil Data Laporan (Realtime)
         onSnapshot(query(laporanRef, orderBy("timestamp", "asc")), (snapshot) => {
             semuaDataLaporan = [];
             snapshot.forEach(docSnap => {
@@ -455,7 +448,8 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
-            let sB_CCM = 0, sQ_CCM = 0, sN_CCM = 0, sB_RM = 0, sQ_RM = 0, sN_RM = 0;
+            let sTotalBeratCCM = 0, sQ_CCM = 0, sN_CCM = 0; 
+            let sTotalBeratRM = 0, sQ_RM = 0, sN_RM = 0;
             const cLabels = [], cCCM = [], cRM = [];
 
             dataArray.forEach(d => {
@@ -469,8 +463,17 @@
                 const qRM = d.qtyRM || 0;
                 const nRM = d.nilaiRM !== undefined ? d.nilaiRM : (d.rm || 0); 
 
-                sB_CCM += bCCM; sQ_CCM += qCCM; sN_CCM += nCCM;
-                sB_RM += bRM; sQ_RM += qRM; sN_RM += nRM;
+                // Perhitungan Akumulasi Berat = (Berat x Qty)
+                const totalBeratBarisCCM = bCCM * qCCM;
+                const totalBeratBarisRM = bRM * qRM;
+
+                sTotalBeratCCM += totalBeratBarisCCM; 
+                sQ_CCM += qCCM; 
+                sN_CCM += nCCM;
+
+                sTotalBeratRM += totalBeratBarisRM; 
+                sQ_RM += qRM; 
+                sN_RM += nRM;
 
                 cLabels.push(d.tanggal);
                 cCCM.push(nCCM); cRM.push(nRM);
@@ -494,13 +497,15 @@
                 `;
             });
 
-            document.getElementById('totalBeratCCM').innerText = sB_CCM.toLocaleString('id-ID');
+            document.getElementById('totalBeratCCM').innerText = sTotalBeratCCM.toLocaleString('id-ID');
             document.getElementById('totalQtyCCM').innerText = sQ_CCM.toLocaleString('id-ID');
             document.getElementById('totalNilaiCCM').innerText = sN_CCM.toLocaleString('id-ID');
-            document.getElementById('totalBeratRM').innerText = sB_RM.toLocaleString('id-ID');
+            
+            document.getElementById('totalBeratRM').innerText = sTotalBeratRM.toLocaleString('id-ID');
             document.getElementById('totalQtyRM').innerText = sQ_RM.toLocaleString('id-ID');
             document.getElementById('totalNilaiRM').innerText = sN_RM.toLocaleString('id-ID');
-            document.getElementById('grandTotalBerat').innerText = (sB_CCM + sB_RM).toLocaleString('id-ID');
+            
+            document.getElementById('grandTotalBerat').innerText = (sTotalBeratCCM + sTotalBeratRM).toLocaleString('id-ID');
             document.getElementById('grandTotalQty').innerText = (sQ_CCM + sQ_RM).toLocaleString('id-ID');
             document.getElementById('grandTotalNilai').innerText = (sN_CCM + sN_RM).toLocaleString('id-ID');
 
@@ -518,7 +523,6 @@
             document.getElementById('selectProdukCCM').value = pCCM === "-" ? "" : pCCM;
             document.getElementById('inputBeratCCM').value = bCCM === 0 ? '' : bCCM;
             document.getElementById('inputQtyCCM').value = qCCM === 0 ? '' : qCCM;
-            // Jika mau edit, nilai per unit dikembalikan dengan membagi total nilai dengan Qty agar tidak berlipat ganda
             const nilaiSatuanCCM = qCCM > 0 ? nCCM / qCCM : nCCM;
             document.getElementById('inputNilaiCCM').value = nilaiSatuanCCM === 0 ? '' : nilaiSatuanCCM;
             
