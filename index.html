@@ -24,49 +24,39 @@
         <!-- ========================================== -->
         <div id="tabDashboard" class="p-6 space-y-6 bg-slate-50/50">
             
-            <!-- Master Produk -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-700 mb-4">Master Data Produk</h2>
-                <form id="produkForm" class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="inputNamaProduk" required class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ketik nama produk baru (contoh: Cat Biru 5L)">
-                    
-                    <select id="inputKategoriProduk" required class="border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-indigo-500 outline-none bg-white md:w-48">
-                        <option value="" disabled selected>Pilih Kategori</option>
-                        <option value="CCM">Untuk CCM</option>
-                        <option value="RM">Untuk RM</option>
-                    </select>
-
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors">+ Tambah Produk</button>
-                </form>
-                <div class="mt-4">
-                    <p class="text-xs text-slate-500 mb-2">Daftar Produk Tersedia:</p>
-                    <div id="listProdukContainer" class="flex flex-wrap gap-2 text-sm"></div>
-                </div>
-            </div>
-
-            <!-- Form Input Utama -->
+            <!-- Form Input Utama & Tambah Produk Langsung -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
                 <h2 class="text-lg font-semibold text-slate-700 mb-4" id="formTitle">Input Data Laporan Baru</h2>
                 <form id="laporanForm" class="space-y-6">
                     <input type="hidden" id="editDocId" value="">
 
+                    <!-- Pilihan Tanggal -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div id="dateInputContainer">
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Laporan</label>
                             <input type="date" id="inputTanggal" required class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 cursor-pointer">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Blok CCM -->
+                        <!-- BAGIAN CCM -->
                         <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 space-y-4 shadow-inner">
                             <h3 class="font-bold text-emerald-800 border-b border-emerald-200 pb-2">Bagian CCM</h3>
+                            
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk CCM</label>
-                                <select id="selectProdukCCM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
-                                    <option value="">-- Pilih Produk CCM --</option>
-                                </select>
+                                <div class="flex gap-2">
+                                    <select id="selectProdukCCM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                        <option value="">-- Pilih atau Tambah Produk --</option>
+                                    </select>
+                                    <button type="button" onclick="bukaInputProdukBaru('CCM')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
+                                </div>
+                                <!-- Input teks jika ingin tambah produk baru langsung -->
+                                <input type="text" id="inputProdukBaruCCM" class="hidden mt-2 w-full border border-emerald-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk CCM baru...">
                             </div>
+
+                            <input type="hidden" id="kategoriCCM" value="CCM">
+
                             <div class="grid grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
@@ -83,15 +73,24 @@
                             </div>
                         </div>
 
-                        <!-- Blok RM -->
+                        <!-- BAGIAN RM -->
                         <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 space-y-4 shadow-inner">
                             <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2">Bagian RM</h3>
+                            
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk RM</label>
-                                <select id="selectProdukRM" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                                    <option value="">-- Pilih Produk RM --</option>
-                                </select>
+                                <div class="flex gap-2">
+                                    <select id="selectProdukRM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                        <option value="">-- Pilih atau Tambah Produk --</option>
+                                    </select>
+                                    <button type="button" onclick="bukaInputProdukBaru('RM')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap">+ Produk Baru</button>
+                                </div>
+                                <!-- Input teks jika ingin tambah produk baru langsung -->
+                                <input type="text" id="inputProdukBaruRM" class="hidden mt-2 w-full border border-blue-300 rounded-lg py-2 px-3 outline-none bg-white" placeholder="Ketik nama produk RM baru...">
                             </div>
+
+                            <input type="hidden" id="kategoriRM" value="RM">
+
                             <div class="grid grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1">Berat (Kg/L)</label>
@@ -258,13 +257,11 @@
             selThn.innerHTML += `<option value="${y}" ${isSelected}>${y}</option>`;
         }
 
-        // Fungsi Format Tanggal untuk Input type="date" (YYYY-MM-DD)
         function getTodayForInput() {
             const t = new Date();
             return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
         }
 
-        // Konversi YYYY-MM-DD ke DD-MM-YYYY (Untuk disimpan ke Database & Ditampilkan di Tabel)
         function formatUntukDatabase(dateStr) {
             if(!dateStr) return "";
             const parts = dateStr.split('-');
@@ -272,7 +269,6 @@
             return dateStr;
         }
 
-        // Konversi DD-MM-YYYY ke YYYY-MM-DD (Untuk dimuat kembali ke Form saat di-Edit)
         function formatUntukInputEdit(dateStr) {
             if(!dateStr) return "";
             const parts = dateStr.split('-');
@@ -280,10 +276,8 @@
             return dateStr;
         }
 
-        // Set form tanggal laporan otomatis hari ini saat halaman dimuat
         document.getElementById('inputTanggal').value = getTodayForInput();
 
-        // Tab Switch Logic
         window.switchTab = (tabName) => {
             document.getElementById('tabDashboard').classList.add('hidden');
             document.getElementById('tabRekap').classList.add('hidden');
@@ -312,45 +306,39 @@
         });
 
         // ----------------------------------------------------
-        // MASTER DATA PRODUK LOGIC
+        // LOGIKA PRODUK OTOMATIS DI FORM LAPORAN
         // ----------------------------------------------------
-        document.getElementById('produkForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('inputNamaProduk').value.trim();
-            const kategori = document.getElementById('inputKategoriProduk').value;
+        window.bukaInputProdukBaru = (kategori) => {
+            const inputField = document.getElementById(`inputProdukBaru${kategori}`);
+            const selectField = document.getElementById(`selectProduk${kategori}`);
             
-            if(nama && kategori) {
-                try {
-                    await addDoc(produkRef, { nama: nama, kategori: kategori, timestamp: new Date() });
-                    document.getElementById('inputNamaProduk').value = '';
-                    document.getElementById('inputKategoriProduk').value = '';
-                } catch (error) {
-                    alert("Gagal menambahkan produk, periksa koneksi internet Anda.");
-                }
+            if (inputField.classList.contains('hidden')) {
+                inputField.classList.remove('hidden');
+                inputField.focus();
+                selectField.value = "";
+                selectField.disabled = true;
+            } else {
+                inputField.classList.add('hidden');
+                inputField.value = "";
+                selectField.disabled = false;
             }
-        });
+        };
 
+        // Ambil list produk untuk dropdown secara realtime
         onSnapshot(query(produkRef, orderBy("nama", "asc")), (snapshot) => {
-            const container = document.getElementById('listProdukContainer');
             const selectCCM = document.getElementById('selectProdukCCM');
             const selectRM = document.getElementById('selectProdukRM');
             
             const curCCM = selectCCM.value; 
             const curRM = selectRM.value;
 
-            container.innerHTML = '';
-            selectCCM.innerHTML = '<option value="">-- Pilih Produk CCM --</option>';
-            selectRM.innerHTML = '<option value="">-- Pilih Produk RM --</option>';
+            // Pertahankan opsi pertama
+            selectCCM.innerHTML = '<option value="">-- Pilih atau Tambah Produk --</option>';
+            selectRM.innerHTML = '<option value="">-- Pilih atau Tambah Produk --</option>';
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const kat = data.kategori || 'UMUM';
-                
-                let badgeStyle = "bg-slate-100 text-slate-700 border-slate-300";
-                if(kat === 'CCM') badgeStyle = "bg-emerald-100 text-emerald-800 border-emerald-300";
-                if(kat === 'RM') badgeStyle = "bg-blue-100 text-blue-800 border-blue-300";
-
-                container.innerHTML += `<span class="${badgeStyle} px-3 py-1 rounded-full border flex items-center gap-2 text-xs font-semibold shadow-sm">[${kat}] ${data.nama} <button type="button" onclick="hapusProduk('${doc.id}')" class="text-red-500 hover:text-red-700 font-bold ml-1">&times;</button></span>`;
+                const kat = data.kat || data.kategori || 'UMUM';
                 
                 if(kat === 'CCM' || kat === 'UMUM') {
                     selectCCM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
@@ -364,31 +352,52 @@
             selectRM.value = curRM;
         });
 
-        window.hapusProduk = async (id) => {
-            if (confirm("Hapus produk ini dari Master Data?")) await deleteDoc(doc(db, "master_produk", id));
-        };
-
         // ----------------------------------------------------
-        // FORM LAPORAN LOGIC (TAMBAHAN QTY)
+        // SIMPAN LAPORAN & OTOMATIS SIMPAN PRODUK BARU JIKA ADA
         // ----------------------------------------------------
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editDocId').value;
             const inputTglRaw = document.getElementById('inputTanggal').value; 
-            
             const tanggalDatabase = inputTglRaw ? formatUntukDatabase(inputTglRaw) : formatUntukDatabase(getTodayForInput());
+
+            // Cek apakah user mengetik produk baru di CCM
+            let produkCCM = document.getElementById('selectProdukCCM').value;
+            const produkBaruCCM = document.getElementById('inputProdukBaruCCM').value.trim();
+            if (produkBaruCCM) {
+                produkCCM = produkBaruCCM;
+                await addDoc(produkRef, { nama: produkBaruCCM, kategori: 'CCM', timestamp: new Date() });
+            }
+
+            // Cek apakah user mengetik produk baru di RM
+            let produkRM = document.getElementById('selectProdukRM').value;
+            const produkBaruRM = document.getElementById('inputProdukBaruRM').value.trim();
+            if (produkBaruRM) {
+                produkRM = produkBaruRM;
+                await addDoc(produkRef, { nama: produkBaruRM, kategori: 'RM', timestamp: new Date() });
+            }
+
+            const beratCCM = parseFloat(document.getElementById('inputBeratCCM').value) || 0;
+            const qtyCCM = parseFloat(document.getElementById('inputQtyCCM').value) || 0;
+            const nilaiSatuanCCM = parseFloat(document.getElementById('inputNilaiCCM').value) || 0;
+            const totalNilaiCCM = nilaiSatuanCCM * qtyCCM; // Nilai dikalikan Qty
+
+            const beratRM = parseFloat(document.getElementById('inputBeratRM').value) || 0;
+            const qtyRM = parseFloat(document.getElementById('inputQtyRM').value) || 0;
+            const nilaiSatuanRM = parseFloat(document.getElementById('inputNilaiRM').value) || 0;
+            const totalNilaiRM = nilaiSatuanRM * qtyRM; // Nilai dikalikan Qty
 
             const dataToSave = {
                 tanggal: tanggalDatabase,
-                produkCCM: document.getElementById('selectProdukCCM').value,
-                beratCCM: parseFloat(document.getElementById('inputBeratCCM').value) || 0,
-                qtyCCM: parseFloat(document.getElementById('inputQtyCCM').value) || 0,
-                nilaiCCM: parseFloat(document.getElementById('inputNilaiCCM').value) || 0,
-                produkRM: document.getElementById('selectProdukRM').value,
-                beratRM: parseFloat(document.getElementById('inputBeratRM').value) || 0,
-                qtyRM: parseFloat(document.getElementById('inputQtyRM').value) || 0,
-                nilaiRM: parseFloat(document.getElementById('inputNilaiRM').value) || 0
+                produkCCM: produkCCM,
+                beratCCM: beratCCM,
+                qtyCCM: qtyCCM,
+                nilaiCCM: totalNilaiCCM, // Nilai sudah dikalikan Qty
+                produkRM: produkRM,
+                beratRM: beratRM,
+                qtyRM: qtyRM,
+                nilaiRM: totalNilaiRM   // Nilai sudah dikalikan Qty
             };
 
             if (dataToSave.nilaiCCM === 0 && dataToSave.nilaiRM === 0 && dataToSave.beratCCM === 0 && dataToSave.beratRM === 0 && dataToSave.qtyCCM === 0 && dataToSave.qtyRM === 0) { 
@@ -416,7 +425,6 @@
             terapkanFilter(); 
         });
 
-        // Logika Filter & Render Tabel
         window.terapkanFilter = () => {
             const fTgl = document.getElementById('filterTgl').value;
             const fBln = document.getElementById('filterBln').value;
@@ -505,18 +513,20 @@
         window.editData = (id, tgl, pCCM, bCCM, qCCM, nCCM, pRM, bRM, qRM, nRM) => {
             switchTab('dashboard'); 
             document.getElementById('editDocId').value = id;
-            
             document.getElementById('inputTanggal').value = formatUntukInputEdit(tgl);
             
             document.getElementById('selectProdukCCM').value = pCCM === "-" ? "" : pCCM;
             document.getElementById('inputBeratCCM').value = bCCM === 0 ? '' : bCCM;
             document.getElementById('inputQtyCCM').value = qCCM === 0 ? '' : qCCM;
-            document.getElementById('inputNilaiCCM').value = nCCM === 0 ? '' : nCCM;
+            // Jika mau edit, nilai per unit dikembalikan dengan membagi total nilai dengan Qty agar tidak berlipat ganda
+            const nilaiSatuanCCM = qCCM > 0 ? nCCM / qCCM : nCCM;
+            document.getElementById('inputNilaiCCM').value = nilaiSatuanCCM === 0 ? '' : nilaiSatuanCCM;
             
             document.getElementById('selectProdukRM').value = pRM === "-" ? "" : pRM;
             document.getElementById('inputBeratRM').value = bRM === 0 ? '' : bRM;
             document.getElementById('inputQtyRM').value = qRM === 0 ? '' : qRM;
-            document.getElementById('inputNilaiRM').value = nRM === 0 ? '' : nRM;
+            const nilaiSatuanRM = qRM > 0 ? nRM / qRM : nRM;
+            document.getElementById('inputNilaiRM').value = nilaiSatuanRM === 0 ? '' : nilaiSatuanRM;
             
             document.getElementById('formTitle').innerText = "Edit Laporan (Mode Ubah Data)";
             document.getElementById('btnSubmit').innerText = "Simpan Perubahan";
@@ -533,6 +543,10 @@
             form.reset(); 
             document.getElementById('editDocId').value = "";
             document.getElementById('inputTanggal').value = getTodayForInput();
+            document.getElementById('inputProdukBaruCCM').classList.add('hidden');
+            document.getElementById('inputProdukBaruRM').classList.add('hidden');
+            document.getElementById('selectProdukCCM').disabled = false;
+            document.getElementById('selectProdukRM').disabled = false;
             document.getElementById('formTitle').innerText = "Input Data Laporan Baru";
             document.getElementById('btnSubmit').innerText = "Simpan Data Laporan";
             document.getElementById('btnSubmit').classList.replace('bg-emerald-600', 'bg-blue-600');
