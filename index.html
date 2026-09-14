@@ -141,10 +141,7 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tahun</label>
                         <select id="filterThn" class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none">
                             <option value="">Semua Tahun</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
-                            <option value="2027">2027</option>
+                            <!-- Script akan mengisi opsi Tahun secara Otomatis -->
                         </select>
                     </div>
                     <div class="flex space-x-2">
@@ -227,13 +224,24 @@
         const laporanRef = collection(db, "laporan_bulanan");
         const produkRef = collection(db, "master_produk");
 
-        let semuaDataLaporan = []; // Simpan semua data untuk keperluan filter
+        let semuaDataLaporan = [];
 
-        // Setup Dropdown Tanggal
+        // Setup Dropdown Tanggal Otomatis (01 - 31)
         const selTgl = document.getElementById('filterTgl');
         for(let i=1; i<=31; i++) {
             let val = String(i).padStart(2, '0');
             selTgl.innerHTML += `<option value="${val}">${val}</option>`;
+        }
+
+        // Setup Dropdown Tahun Otomatis (Realtime)
+        const selThn = document.getElementById('filterThn');
+        const tahunSekarang = new Date().getFullYear(); // Ambil tahun saat ini dari sistem
+        const tahunMulai = 2024; // Anda bisa atur tahun dimulainya aplikasi
+        
+        for(let y = tahunMulai; y <= tahunSekarang + 1; y++) {
+            // Tahun saat ini akan otomatis terpilih (selected) secara default
+            const isSelected = (y === tahunSekarang) ? 'selected' : '';
+            selThn.innerHTML += `<option value="${y}" ${isSelected}>${y}</option>`;
         }
 
         // Tab Switch Logic
@@ -249,7 +257,7 @@
             } else {
                 document.getElementById('tabRekap').classList.remove('hidden');
                 document.getElementById('navRekap').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold";
-                terapkanFilter(); // Update tabel saat buka tab
+                terapkanFilter(); 
             }
         };
 
@@ -343,7 +351,7 @@
             snapshot.forEach(docSnap => {
                 semuaDataLaporan.push({ id: docSnap.id, ...docSnap.data() });
             });
-            terapkanFilter(); // Update tabel berdasarkan filter saat ini
+            terapkanFilter(); 
         });
 
         // Logika Filter & Render Tabel
@@ -352,7 +360,6 @@
             const fBln = document.getElementById('filterBln').value;
             const fThn = document.getElementById('filterThn').value;
 
-            // Filter data
             const dataTersaring = semuaDataLaporan.filter(d => {
                 const parts = (d.tanggal || "").split('-');
                 if(parts.length !== 3) return true;
@@ -370,7 +377,8 @@
         window.resetFilter = () => {
             document.getElementById('filterTgl').value = "";
             document.getElementById('filterBln').value = "";
-            document.getElementById('filterThn').value = "2026"; // Default tahun berjalan
+            // Reset tahun mengikuti tahun sistem HP/Komputer secara realtime
+            document.getElementById('filterThn').value = new Date().getFullYear().toString(); 
             terapkanFilter();
         };
 
@@ -382,14 +390,13 @@
             const cLabels = [], cCCM = [], cRM = [];
 
             dataArray.forEach(d => {
-                // LOGIKA BACKWARD COMPATIBILITY (Tarik data lama)
                 const pCCM = d.produkCCM || "-";
                 const bCCM = d.beratCCM || 0;
-                const nCCM = d.nilaiCCM !== undefined ? d.nilaiCCM : (d.ccm || 0); // Ambil dari format lama (d.ccm) jika ada
+                const nCCM = d.nilaiCCM !== undefined ? d.nilaiCCM : (d.ccm || 0);
                 
                 const pRM = d.produkRM || "-";
                 const bRM = d.beratRM || 0;
-                const nRM = d.nilaiRM !== undefined ? d.nilaiRM : (d.rm || 0); // Ambil dari format lama (d.rm) jika ada
+                const nRM = d.nilaiRM !== undefined ? d.nilaiRM : (d.rm || 0); 
 
                 sB_CCM += bCCM; sN_CCM += nCCM;
                 sB_RM += bRM; sN_RM += nRM;
@@ -414,7 +421,6 @@
                 `;
             });
 
-            // Update Angka Total
             document.getElementById('totalBeratCCM').innerText = sB_CCM.toLocaleString('id-ID');
             document.getElementById('totalNilaiCCM').innerText = sN_CCM.toLocaleString('id-ID');
             document.getElementById('totalBeratRM').innerText = sB_RM.toLocaleString('id-ID');
@@ -422,16 +428,14 @@
             document.getElementById('grandTotalBerat').innerText = (sB_CCM + sB_RM).toLocaleString('id-ID');
             document.getElementById('grandTotalNilai').innerText = (sN_CCM + sN_RM).toLocaleString('id-ID');
 
-            // Update Chart
             laporanChart.data.labels = cLabels;
             laporanChart.data.datasets[0].data = cCCM;
             laporanChart.data.datasets[1].data = cRM;
             laporanChart.update();
         }
 
-        // Bantuan UI Edit & Hapus
         window.editData = (id, tgl, pCCM, bCCM, nCCM, pRM, bRM, nRM) => {
-            switchTab('dashboard'); // Kembali ke form input
+            switchTab('dashboard'); 
             document.getElementById('editDocId').value = id;
             document.getElementById('inputTanggal').value = tgl;
             
