@@ -13,9 +13,10 @@
         <!-- Header & Navigasi Tab -->
         <div class="p-4 md:p-6 border-b border-slate-100 bg-white">
             <h1 class="text-xl md:text-2xl font-bold text-slate-800 mb-4 md:mb-6">Sistem Laporan Harian Bang Fer</h1>
-            <nav class="flex gap-4 md:gap-6 text-sm font-medium">
-                <button id="navDashboard" onclick="switchTab('dashboard')" class="text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all">Dashboard & Input Data</button>
-                <button id="navRekap" onclick="switchTab('rekap')" class="text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all">Rekap & Histori Laporan</button>
+            <nav class="flex gap-4 md:gap-6 text-sm font-medium overflow-x-auto">
+                <button id="navDashboard" onclick="switchTab('dashboard')" class="text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all whitespace-nowrap">Dashboard & Input Data</button>
+                <button id="navRekap" onclick="switchTab('rekap')" class="text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all whitespace-nowrap">Rekap & Histori Laporan</button>
+                <button id="navHarga" onclick="switchTab('harga')" class="text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all whitespace-nowrap">Daftar Harga Produk</button>
             </nav>
         </div>
 
@@ -23,8 +24,6 @@
         <!-- TAB 1: DASHBOARD & INPUT                   -->
         <!-- ========================================== -->
         <div id="tabDashboard" class="p-4 md:p-6 space-y-6 bg-slate-50/50">
-            
-            <!-- Form Input Utama -->
             <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
                 <h2 class="text-lg font-semibold text-slate-700 mb-4" id="formTitle">Input Data Laporan Baru</h2>
                 <form id="laporanForm" class="space-y-6">
@@ -45,7 +44,6 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk CCM</label>
-                                <!-- Layout responsif flex-col di HP agar tombol tidak terpotong -->
                                 <div class="flex flex-col sm:flex-row gap-2">
                                     <select id="selectProdukCCM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
                                         <option value="">-- Pilih atau Tambah Produk --</option>
@@ -79,7 +77,6 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Produk RM</label>
-                                <!-- Layout responsif flex-col di HP agar tombol tidak terpotong -->
                                 <div class="flex flex-col sm:flex-row gap-2">
                                     <select id="selectProdukRM" class="flex-1 border border-slate-300 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                                         <option value="">-- Pilih atau Tambah Produk --</option>
@@ -120,7 +117,6 @@
         <!-- TAB 2: REKAP & HISTORI                     -->
         <!-- ========================================== -->
         <div id="tabRekap" class="hidden p-4 md:p-6 space-y-6 bg-slate-50/50">
-            
             <!-- Filter Pencarian -->
             <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
                 <h2 class="text-lg font-semibold text-slate-700 mb-4">Cari Histori Laporan</h2>
@@ -218,6 +214,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: DAFTAR HARGA & TAMBAH PRODUK        -->
+        <!-- ========================================== -->
+        <div id="tabHarga" class="hidden p-4 md:p-6 space-y-6 bg-slate-50/50">
+            <!-- Form Tambah/Edit Produk & Harga -->
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4" id="formHargaTitle">Tambah Produk & Harga Baru</h2>
+                <form id="produkHargaForm" class="space-y-4">
+                    <input type="hidden" id="editProdukId" value="">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Produk</label>
+                            <input type="text" id="inputNamaProduk" required class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Cat Dulux / Thinner">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                            <select id="inputKategoriProduk" required class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none bg-white">
+                                <option value="CCM">CCM</option>
+                                <option value="RM">RM</option>
+                                <option value="UMUM">Umum</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp)</label>
+                            <input type="number" id="inputHargaProduk" required class="w-full border border-slate-300 rounded-lg py-2.5 px-3 outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 pt-2">
+                        <button type="submit" id="btnSimpanProduk" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors">Simpan Produk</button>
+                        <button type="button" id="btnBatalProduk" onclick="resetFormProduk()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-6 rounded-lg transition-colors">Batal</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabel Daftar Harga dengan Pencarian & Scroll -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 md:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                    <h3 class="font-semibold text-slate-700">Daftar Harga Produk</h3>
+                    <!-- Kolom Pencarian Produk -->
+                    <div class="w-full sm:w-72">
+                        <input type="text" id="searchDaftarHarga" oninput="renderTabelHarga()" placeholder="Cari nama produk..." class="w-full border border-slate-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <!-- Kotak Tabel dengan Scroll -->
+                <div class="overflow-x-auto overflow-y-auto max-h-[450px]">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-100 sticky top-0 z-10 shadow-sm text-slate-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-4 border-b font-medium">Nama Produk</th>
+                                <th class="p-4 border-b font-medium">Kategori</th>
+                                <th class="p-4 border-b font-medium text-right">Harga (Rp)</th>
+                                <th class="p-4 border-b font-medium text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableHargaBody" class="text-slate-600 text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Firebase & Logika -->
@@ -240,6 +298,7 @@
         const produkRef = collection(db, "master_produk");
 
         let semuaDataLaporan = [];
+        let semuaDataProduk = [];
 
         const selTgl = document.getElementById('filterTgl');
         for(let i=1; i<=31; i++) {
@@ -279,20 +338,26 @@
         window.switchTab = (tabName) => {
             document.getElementById('tabDashboard').classList.add('hidden');
             document.getElementById('tabRekap').classList.add('hidden');
-            document.getElementById('navDashboard').className = "text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all";
-            document.getElementById('navRekap').className = "text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all";
+            document.getElementById('tabHarga').classList.add('hidden');
+            
+            document.getElementById('navDashboard').className = "text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all whitespace-nowrap";
+            document.getElementById('navRekap').className = "text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all whitespace-nowrap";
+            document.getElementById('navHarga').className = "text-slate-500 hover:text-slate-700 pb-2 px-1 transition-all whitespace-nowrap";
 
             if (tabName === 'dashboard') {
                 document.getElementById('tabDashboard').classList.remove('hidden');
-                document.getElementById('navDashboard').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold";
-            } else {
+                document.getElementById('navDashboard').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold whitespace-nowrap";
+            } else if (tabName === 'rekap') {
                 document.getElementById('tabRekap').classList.remove('hidden');
-                document.getElementById('navRekap').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold";
+                document.getElementById('navRekap').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold whitespace-nowrap";
                 terapkanFilter(); 
+            } else if (tabName === 'harga') {
+                document.getElementById('tabHarga').classList.remove('hidden');
+                document.getElementById('navHarga').className = "text-blue-600 border-b-2 border-blue-600 pb-2 px-1 transition-all font-bold whitespace-nowrap";
+                renderTabelHarga();
             }
         };
 
-        // Chart Setup dengan opsi responsif
         const ctx = document.getElementById('laporanChart').getContext('2d');
         const laporanChart = new Chart(ctx, {
             type: 'line',
@@ -304,13 +369,7 @@
                 responsive: true, 
                 maintainAspectRatio: false, 
                 plugins: { legend: { position: 'top' } },
-                scales: {
-                    x: {
-                        ticks: {
-                            maxTicksLimit: 15 // Mencegah tanggal saling bertumpuk di layar kecil/PC
-                        }
-                    }
-                }
+                scales: { x: { ticks: { maxTicksLimit: 15 } } }
             }
         });
 
@@ -330,7 +389,9 @@
             }
         };
 
+        // Realtime Master Produk (Tersinkronisasi otomatis dengan pencarian)
         onSnapshot(query(produkRef, orderBy("nama", "asc")), (snapshot) => {
+            semuaDataProduk = [];
             const selectCCM = document.getElementById('selectProdukCCM');
             const selectRM = document.getElementById('selectProdukRM');
             
@@ -342,19 +403,111 @@
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                semuaDataProduk.push({ id: doc.id, ...data });
                 const kat = data.kat || data.kategori || 'UMUM';
                 
                 if(kat === 'CCM' || kat === 'UMUM') {
-                    selectCCM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                    selectCCM.innerHTML += `<option value="${data.nama}">${data.nama} (Rp ${(data.harga || 0).toLocaleString('id-ID')})</option>`;
                 }
                 if(kat === 'RM' || kat === 'UMUM') {
-                    selectRM.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                    selectRM.innerHTML += `<option value="${data.nama}">${data.nama} (Rp ${(data.harga || 0).toLocaleString('id-ID')})</option>`;
                 }
             });
             
             selectCCM.value = curCCM; 
             selectRM.value = curRM;
+            
+            // Selalu update tabel harga secara realtime saat data berubah/masuk
+            renderTabelHarga();
         });
+
+        // Simpan / Edit Produk di Tab Daftar Harga
+        const produkHargaForm = document.getElementById('produkHargaForm');
+        produkHargaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editProdukId').value;
+            const nama = document.getElementById('inputNamaProduk').value.trim();
+            const kategori = document.getElementById('inputKategoriProduk').value;
+            const harga = parseFloat(document.getElementById('inputHargaProduk').value) || 0;
+
+            try {
+                if(editId) {
+                    await updateDoc(doc(db, "master_produk", editId), { nama, kategori, harga });
+                    alert("Produk & Harga berhasil diperbarui!");
+                } else {
+                    await addDoc(produkRef, { nama, kategori, harga, timestamp: new Date() });
+                    alert("Produk & Harga baru berhasil ditambahkan!");
+                }
+                resetFormProduk();
+            } catch(err) {
+                alert("Terjadi kesalahan saat menyimpan produk.");
+            }
+        });
+
+        window.editProdukHarga = (id, nama, kategori, harga) => {
+            document.getElementById('editProdukId').value = id;
+            document.getElementById('inputNamaProduk').value = nama;
+            document.getElementById('inputKategoriProduk').value = kategori;
+            document.getElementById('inputHargaProduk').value = harga;
+            document.getElementById('formHargaTitle').innerText = "Edit Produk & Harga";
+            document.getElementById('btnSimpanProduk').innerText = "Simpan Perubahan";
+            document.getElementById('btnSimpanProduk').classList.replace('bg-emerald-600', 'bg-blue-600');
+            document.getElementById('btnBatalProduk').classList.remove('hidden');
+            document.getElementById('formHargaTitle').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.hapusProdukHarga = async (id) => {
+            if(confirm("Yakin ingin menghapus produk ini dari daftar harga?")) {
+                await deleteDoc(doc(db, "master_produk", id));
+            }
+        };
+
+        window.resetFormProduk = () => {
+            produkHargaForm.reset();
+            document.getElementById('editProdukId').value = "";
+            document.getElementById('formHargaTitle').innerText = "Tambah Produk & Harga Baru";
+            document.getElementById('btnSimpanProduk').innerText = "Simpan Produk";
+            document.getElementById('btnSimpanProduk').classList.replace('bg-blue-600', 'bg-emerald-600');
+            document.getElementById('btnBatalProduk').classList.add('hidden');
+        };
+
+        // Fungsi Render & Filter Pencarian Daftar Harga yang Tersinkron
+        window.renderTabelHarga = () => {
+            const tbodyHarga = document.getElementById('tableHargaBody');
+            if(!tbodyHarga) return;
+            tbodyHarga.innerHTML = '';
+
+            const searchInput = document.getElementById('searchDaftarHarga');
+            const keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            
+            const filteredProduk = semuaDataProduk.filter(p => (p.nama || "").toLowerCase().includes(keyword));
+
+            if(filteredProduk.length === 0) {
+                tbodyHarga.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Produk tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            filteredProduk.forEach(p => {
+                const kat = p.kategori || p.kat || "UMUM";
+                const harga = p.harga || 0;
+
+                let badgeStyle = "bg-slate-100 text-slate-700";
+                if(kat === 'CCM') badgeStyle = "bg-emerald-100 text-emerald-800";
+                if(kat === 'RM') badgeStyle = "bg-blue-100 text-blue-800";
+
+                tbodyHarga.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-4 font-medium text-slate-800">${p.nama}</td>
+                        <td class="p-4"><span class="${badgeStyle} px-2.5 py-1 rounded-full text-xs font-semibold">${kat}</span></td>
+                        <td class="p-4 text-right font-semibold text-slate-700">Rp ${harga.toLocaleString('id-ID')}</td>
+                        <td class="p-4 text-center space-x-1 whitespace-nowrap">
+                            <button onclick="editProdukHarga('${p.id}', '${p.nama}', '${kat}', ${harga})" class="text-blue-600 bg-blue-100 px-3 py-1 rounded-md text-sm font-semibold">Edit</button>
+                            <button onclick="hapusProdukHarga('${p.id}')" class="text-red-600 bg-red-100 px-3 py-1 rounded-md text-sm font-semibold">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        };
 
         const form = document.getElementById('laporanForm');
         form.addEventListener('submit', async (e) => {
@@ -367,14 +520,14 @@
             const produkBaruCCM = document.getElementById('inputProdukBaruCCM').value.trim();
             if (produkBaruCCM) {
                 produkCCM = produkBaruCCM;
-                await addDoc(produkRef, { nama: produkBaruCCM, kategori: 'CCM', timestamp: new Date() });
+                await addDoc(produkRef, { nama: produkBaruCCM, kategori: 'CCM', harga: 0, timestamp: new Date() });
             }
 
             let produkRM = document.getElementById('selectProdukRM').value;
             const produkBaruRM = document.getElementById('inputProdukBaruRM').value.trim();
             if (produkBaruRM) {
                 produkRM = produkBaruRM;
-                await addDoc(produkRef, { nama: produkBaruRM, kategori: 'RM', timestamp: new Date() });
+                await addDoc(produkRef, { nama: produkBaruRM, kategori: 'RM', harga: 0, timestamp: new Date() });
             }
 
             const beratCCM = parseFloat(document.getElementById('inputBeratCCM').value) || 0;
@@ -455,8 +608,6 @@
             
             let sTotalBeratCCM = 0, sQ_CCM = 0, sN_CCM = 0; 
             let sTotalBeratRM = 0, sQ_RM = 0, sN_RM = 0;
-
-            // Objek untuk mengakumulasikan grafik per tanggal unik agar tidak kembar/menumpuk
             let chartDataMap = {};
 
             dataArray.forEach(d => {
@@ -481,7 +632,6 @@
                 sQ_RM += qRM; 
                 sN_RM += nRM;
 
-                // Akumulasi nilai grafik berdasarkan tanggal yang sama
                 if (!chartDataMap[d.tanggal]) {
                     chartDataMap[d.tanggal] = { ccm: 0, rm: 0 };
                 }
@@ -519,7 +669,6 @@
             document.getElementById('grandTotalQty').innerText = (sQ_CCM + sQ_RM).toLocaleString('id-ID');
             document.getElementById('grandTotalNilai').innerText = (sN_CCM + sN_RM).toLocaleString('id-ID');
 
-            // Masukkan data grafik yang sudah digabungkan per tanggal unik
             const cLabels = Object.keys(chartDataMap);
             const cCCM = cLabels.map(tgl => chartDataMap[tgl].ccm);
             const cRM = cLabels.map(tgl => chartDataMap[tgl].rm);
